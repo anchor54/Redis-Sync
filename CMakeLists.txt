@@ -8,6 +8,7 @@ project(RedisSync)
 add_executable(app
     src/main.cpp
     src/utils.cpp
+    src/rdb.cpp
 )
 
 # Tell the compiler to look in the "include" directory for header files

@@ -1,3 +1,6 @@
+#include "utils.h"
+#include "rdb.h"
+
 #include <iostream>
 #include <string>
 #include <map>
@@ -6,27 +9,17 @@
 #include <sys/wait.h>   // for wait
 #include <signal.h>
 
-#include "utils.h"
-
 /**
  * - [x] Keep accepting requests from terminal
  * - [ ] On BGSAVE:
  *      - [x] parent forks a child process
  *      - [ ] parent start writting newer data to circular backup buffer
- *      - [ ] the child process writes all the data to RDB file
+ *      - [x] the child process writes all the data to RDB file
  *      - [ ] sends the RDB file over network to replica
  *      - 
  */
 
 std::map<std::string, std::string> db;
-
-std::string toLowerCase(std::string &s) {
-    std::string lowercase = "";
-    for (char c: s) {
-        lowercase += tolower(c);
-    }
-    return lowercase;
-}
 
 using handlerFn = std::function<void(std::vector<std::string>)>;
 
@@ -50,7 +43,7 @@ void bgsaveHandler(std::vector<std::string> args) {
     pid_t pid = fork();
     if (pid == 0) {      // <-- this is a child process
         std::cout << "Starting background save... \n";
-        sleep(5);
+        rdbExport(db);
         std::cout << "Background save done...\n";
         std::cout << "Child Exiting...\n";
         exit(0);
